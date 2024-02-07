@@ -2,12 +2,10 @@ import { useEffect, useState } from "react";
 import "./App.css";
 
 function App() {
-  const [count, setCount] = useState(0);
-
   const [searchTerm, setSearchTerm] = useState("");
   const [suggestions, setSuggestions] = useState([]);
 
-  console.log(suggestions,'22')
+  console.log(suggestions, '22')
   useEffect(() => {
     console.log('insiden useffe')
     const fetchUsers = () => {
@@ -15,18 +13,15 @@ function App() {
         setSuggestions([]);
         return;
       }
-
-      
-
-    fetch(`'https://dummyjson.com/users/search?q=${searchTerm}'`)
-        .then((res) => {
-          console.log(res) 
-          res.json()
-        })
+      fetch(`https://dummyjson.com/users/search?q=${searchTerm}`)
+        .then((res) => res.json())
         .then((data) => setSuggestions(data))
-        .catch((err) => console.error(err));
+        .catch((err) => {
+          console.error(err);
+        });
     };
-    
+
+
     fetchUsers();
   }, [searchTerm]);
 
@@ -44,7 +39,7 @@ function App() {
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="search for user"
           />
-          <ul className="suggestions-list" >{suggestions?.users.map((user,index) => {})}</ul>
+          <ul className="suggestions-list" >{ }</ul>
           {/* search box with search term */}
         </div>
       </div>
