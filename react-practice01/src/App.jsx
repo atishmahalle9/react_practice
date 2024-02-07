@@ -1,11 +1,14 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./App.css";
+import Pill from './components/Pill'
 
 function App() {
   const [searchTerm, setSearchTerm] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [selectedUserSet, setSelectedUserSet] = useState(new Set());
+
+  const inputRef = useRef(null)
 
 
   useEffect(() => {
@@ -28,24 +31,44 @@ function App() {
 
   const handleSelectUser = (user) => {
     setSelectedUsers([...selectedUsers, user]);
-    console.log(selectedUsers, '222')
     setSelectedUserSet(new Set([...selectedUserSet, user.email]));
-    console.log(selectedUserSet, '222111')
     setSearchTerm("");
     setSuggestions([]);
+    inputRef.current.focus()
   };
+
+  const handleRemoveUser = (user) => {
+    const updatedUsers = selectedUsers.filter((selectedUser) => selectedUser.id !== user.id)
+
+    setSelectedUsers(updatedUsers)
+
+    const updatedEmails = new Set(selectedUserSet)
+    updatedEmails.delete(user.emails)
+  }
+
+  const handleKeydown = (e) => {
+    if (e.key === 'Backspace' && e.target.value === '' && selectedUsers.length > 0) {
+      const lastUser = selectedUsers[selectedUsers.length - 1];
+      handleRemoveUser(lastUser)
+    }
+  }
 
   return (
     <>
       <div className="user-search-container">
         <div className="user-search-input">
           {/* pills */}
+          {selectedUsers.map((user) => {
+            return <Pill key={user.email} image={user.image} text={`${user.firstName} ${user.lastName}`} onClick={() => handleRemoveUser(user)} />
+          })}
           {/* input with search suggestion */}
           <div>
             <input
+              ref={inputRef}
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
+              onKeyDown={handleKeydown}
               placeholder="search for user"
             />
             <ul className="suggestions-list" >{suggestions?.users?.map((user, index) => {
@@ -59,7 +82,7 @@ function App() {
           </div>
           {/* search box with search term */}
         </div>
-      </div>
+      </div >
     </>
   );
 }
